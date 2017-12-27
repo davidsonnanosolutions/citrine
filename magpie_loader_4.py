@@ -23,7 +23,7 @@ training_data_start, training_data_end, results_data_position, test_data_start, 
 
 def load_data():
     
-    with open('/home/wizard/data/citirineChallenge/training_data.csv', 'rb') as f:
+    with open('/home/spike/citrine/training_data.csv', 'rb') as f:
 
         # load the csv file into a (2572,99) dataframe
         raw_df = pd.read_csv(f)
