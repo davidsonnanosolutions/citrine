@@ -1,13 +1,7 @@
 """network2.py
 ~~~~~~~~~~~~~~
 
-An improved version of network.py, implementing the stochastic
-gradient descent learning algorithm for a feedforward neural network.
-Improvements include the addition of the cross-entropy cost function,
-regularization, and better initialization of network weights.  Note
-that I have focused on making the code simple, easily readable, and
-easily modifiable.  It is not optimized, and omits many desirable
-features.
+Version 4 - new accuracy reporting method
 
 """
 
@@ -254,7 +248,7 @@ class Network(object):
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
 
-    def accuracy(self, data, convert=False):
+    def accuracy(self, data, convert=False, tolerance=90):
         """Return the number of inputs in ``data`` for which the neural
         network outputs the correct result. The neural network's
         output is assumed to be the index of whichever neuron in the
@@ -277,11 +271,11 @@ class Network(object):
         mnist_loader.load_data_wrapper.
 
         """
+        tolerance = tolerance/100
         if convert:
             results = [(np.argmax(self.feedforward(x)), np.argmax(y)) for (x, y) in data]
-        else:
-            results = [(list(np.around(self.feedforward(x),decimals=0)), list(y)) for (x, y) in data]
-            #print [(np.around(self.feedforward(x),decimals=0), y) for (x, y) in data]
+        else: 
+            results = [(list(approximate(self.feedforward(x),tolerance)), list(y)) for (x, y) in data]
 
         return np.sum(np.int(x == y) for (x, y) in results)
 
@@ -335,3 +329,18 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
+
+def approximate(x, tolerance):
+    appr_x = []
+    for i in x:
+        limit = max(i)*tolerance
+        temp_vec = []
+        for element in i:
+            if element >= limit:
+                    temp_vec.append(1)
+            else: #set = to 0
+                temp_vec.append(0)
+        appr_x.append(temp_vec)
+    print "\n Guess \n {} \n Approximate \n {}".format(x[0],appr_x[0])
+    return appr_x
+

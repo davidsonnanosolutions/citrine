@@ -1,13 +1,7 @@
 """network2.py
 ~~~~~~~~~~~~~~
 
-An improved version of network.py, implementing the stochastic
-gradient descent learning algorithm for a feedforward neural network.
-Improvements include the addition of the cross-entropy cost function,
-regularization, and better initialization of network weights.  Note
-that I have focused on making the code simple, easily readable, and
-easily modifiable.  It is not optimized, and omits many desirable
-features.
+version 5 - no rounding
 
 """
 
@@ -280,7 +274,7 @@ class Network(object):
         if convert:
             results = [(np.argmax(self.feedforward(x)), np.argmax(y)) for (x, y) in data]
         else:
-            results = [(list(np.around(self.feedforward(x),decimals=0)), list(y)) for (x, y) in data]
+            results = [(list(self.feedforward(x)), list(y)) for (x, y) in data]
             #print [(np.around(self.feedforward(x),decimals=0), y) for (x, y) in data]
 
         return np.sum(np.int(x == y) for (x, y) in results)
