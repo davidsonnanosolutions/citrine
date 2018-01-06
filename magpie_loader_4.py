@@ -23,7 +23,7 @@ training_data_start, training_data_end, results_data_position, test_data_start, 
 
 def load_data():
     
-    with open('/home/spike/citrine/training_data.csv', 'rb') as f:
+    with open('/home/wizard/citrine/training_data.csv', 'rb') as f:
 
         # load the csv file into a (2572,99) dataframe
         raw_df = pd.read_csv(f)
@@ -36,7 +36,7 @@ def load_data():
         norm_df = norm_df.join(temp_df)
         norm_df = norm_df.join(raw_df.iloc[:,-1])
 
-        norm_df.to_csv("/home/spike/citrine/normalized_training_data.csv")
+        norm_df.to_csv("/home/wizard/citrine/normalized_training_data.csv")
 
         # randomly choose 10% of the rows to be set aside as validation data
         valIndex = random.sample(xrange(len(norm_df)),int(round(0.1*len(norm_df))))
@@ -62,7 +62,7 @@ def load_data():
 
         validation_data = (validation_df.iloc[:,training_data_start:training_data_end].values.astype(np.float32),validation_df.iloc[:,results_data_position].values)
 
-    with open('/home/spike/citrine/test_data.csv', 'rb') as f:
+    with open('/home/wizard/citrine/test_data.csv', 'rb') as f:
 
         test_df = pd.read_csv(f)
         data_df = test_df.iloc[:,2:]

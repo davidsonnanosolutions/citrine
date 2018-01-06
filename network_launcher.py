@@ -8,14 +8,14 @@ training_data, validation_data, test_data = mgpl.load_data_wrapper()
 
 import network2_4 as network2
 
-net = network2.Network([96, 30, 11], cost=network2.QuadraticCost)
+net = network2.Network([96, 100, 11], cost=network2.CrossEntropyCost)
 net.large_weight_initializer()
 
 
 k = 0.1
 upper = 0.9
 step = 0.1
-results_path = "/home/spike/citrine/"
+results_path = "/home/wizard/citrine/"
 """
 while k <= upper:
 	ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, 100, 1900, k, evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
@@ -38,7 +38,7 @@ while k <= upper:
 
 	k+=step
 """
-ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, 2, 1, 0.2, evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
+ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, 1, 1000, 0.15, evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
 
 epo_df = pd.DataFrame(data=epo)
 epo_df.columns = ['Epoch:']
@@ -52,8 +52,8 @@ acc_df.columns = ['Accuracy:']
 res_df = epo_df.join(cos_df)
 res_df = res_df.join(acc_df)
 
-file_name = results_path + str(k) + "optimized_2000_100_nr.csv"
+file_name = results_path + str(k) + "30_10_0.1_100neur.csv"
 
-res_df.to_csv(file_name)
+#res_df.to_csv(file_name)
 
 

@@ -127,6 +127,7 @@ class Network(object):
 
             #print 'a = {}'.format(a) 
             # a appears to be a 11 element vector
+        #print 'a = {}'.format(a)
         return a
 
     def SGD(self, training_data, epochs, mini_batch_size, eta,
@@ -281,6 +282,7 @@ class Network(object):
             results = [(np.argmax(self.feedforward(x)), np.argmax(y)) for (x, y) in data]
         else:
             results = [(list(np.around(self.feedforward(x),decimals=0)), list(y)) for (x, y) in data]
+        print 'ff(x) = {}'.format(self.feedforward(x))
             #print [(np.around(self.feedforward(x),decimals=0), y) for (x, y) in data]
 
         return np.sum(np.int(x == y) for (x, y) in results)
