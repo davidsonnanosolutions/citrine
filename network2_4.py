@@ -1,7 +1,9 @@
 ## network v4.0 ##
 # Version Notes: (December 24th, 2017) New accuracy reporting method
 # Sets up and launches the neural network using the provided training data and network shape
-# Developed by Malcolm Davidson. Updates avilable at https://github.com/davidsonnanosolutions/citrine.git
+# Developed by Malcolm Davidson based on work by Michael Nielsen.
+# Updates available at https://github.com/davidsonnanosolutions/citrine.git
+# The original file can be found at https://github.com/mnielsen/neural-networks-and-deep-learning.git
 ##
 
 #### Libraries
@@ -21,6 +23,8 @@ import matplotlib.pyplot as plt
 # Return the cost associated with an output ``a`` and desired output ``y``.
 ##
 class QuadraticCost(object):
+
+
 	@staticmethod
 	def fn(a, y):
 		return 0.5 * np.linalg.norm(a - y) ** 2
@@ -32,9 +36,14 @@ class QuadraticCost(object):
 
 
 ## CrossEntropyCost class ##
-#
+# In order to make use of the cross entropy function with the desired stability vector
+# format I had to include a method to exclude 0 and 1. This is accomplished by looping
+# through elements of the predicted vector and reassigning 0 and 1 to appropriate values
+# that are still defined for the logarithm function.
 ##
 class CrossEntropyCost(object):
+
+
 	@staticmethod
 	def fn(a, y):
 		"""Return the cost associated with an output ``a`` and desired output
@@ -43,8 +52,14 @@ class CrossEntropyCost(object):
 		in the same slot, then the expression (1-y)*np.log(1-a)
 		returns nan.  The np.nan_to_num ensures that that is converted
 		to the correct value (0.0).
-
 		"""
+		for i in xrange(0,len(a)):
+			if a[i] >= 1:
+				a[i] = 0.999
+			elif a[i] <= 0:
+				a[i] = 0.001
+
+
 		return np.sum(np.nan_to_num(-y * np.log(a) - (1 - y) * np.log(1 - a)))
 
 	@staticmethod
@@ -60,7 +75,11 @@ class CrossEntropyCost(object):
 
 #### Main Network class
 class Network(object):
+
+
 	def __init__(self, sizes, cost=CrossEntropyCost):
+
+
 		"""The list ``sizes`` contains the number of neurons in the respective
 		layers of the network.  For example, if the list was [2, 3, 1]
 		then it would be a three-layer network, with the first layer
@@ -77,6 +96,8 @@ class Network(object):
 		self.cost = cost
 
 	def default_weight_initializer(self):
+
+
 		"""Initialize each weight using a Gaussian distribution with mean 0
 		and standard deviation 1 over the square root of the number of
 		weights connecting to the same neuron.  Initialize the biases
@@ -94,6 +115,8 @@ class Network(object):
 						for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
 	def large_weight_initializer(self):
+
+
 		"""Initialize the weights using a Gaussian distribution with mean 0
 		and standard deviation 1.  Initialize the biases using a
 		Gaussian distribution with mean 0 and standard deviation 1.
@@ -114,6 +137,8 @@ class Network(object):
 						for x, y in zip(self.sizes[:-1], self.sizes[1:])]
 
 	def feedforward(self, a):
+
+
 		"""Return the output of the network if ``a`` is input."""
 		for b, w in zip(self.biases, self.weights):
 			a = np.around(sigmoid(np.dot(w, a) + b), decimals=1)
@@ -123,6 +148,8 @@ class Network(object):
 		return a
 
 	def SGD(self, training_data, epochs, mini_batch_size, eta,
+
+
 			lmbda=0.0,
 			evaluation_data=None,
 			monitor_evaluation_cost=False,
@@ -189,7 +216,9 @@ class Network(object):
 				norm_accuracy = round(100*(float(accuracy)/float(n_data)),2)
 				evaluation_accuracy_norm.append(norm_accuracy)
 				print "Accuracy on evaluation data: {} / {} or {} %".format(accuracy, n_data, norm_accuracy)
+				# Added accuracy expressed as percentage.
 
+		# Added plotting functionality to help visualize results.
 		if plot_results:
 			fig = plt.figure()
 			X = epo
@@ -209,6 +238,8 @@ class Network(object):
 		return evaluation_cost, evaluation_accuracy, training_cost, training_accuracy, epo
 
 	def update_mini_batch(self, mini_batch, eta, lmbda, n):
+
+
 		"""Update the network's weights and biases by applying gradient
 		descent using backpropagation to a single mini batch.  The
 		``mini_batch`` is a list of tuples ``(x, y)``, ``eta`` is the
@@ -231,6 +262,8 @@ class Network(object):
 					   for b, nb in zip(self.biases, nabla_b)]
 
 	def backprop(self, x, y):
+
+
 		"""Return a tuple ``(nabla_b, nabla_w)`` representing the
 		gradient for the cost function C_x.  ``nabla_b`` and
 		``nabla_w`` are layer-by-layer lists of numpy arrays, similar
@@ -264,7 +297,14 @@ class Network(object):
 			nabla_w[-l] = np.dot(delta, activations[-l - 1].transpose())
 		return (nabla_b, nabla_w)
 
+	## accuracy method ##
+	# I updated the orgional accuracy method to work when comparing vectors in place
+	# of single digits. This works by using the approximate function to force values to
+	# 0 or 1, similar to Nielsen's use of arg_max().
+	##
 	def accuracy(self, data, tolerance=90.0):
+
+
 		"""Return the number of inputs in ``data`` for which the neural
 		network outputs the correct result. The neural network's
 		output is assumed to be the index of whichever neuron in the
@@ -287,12 +327,13 @@ class Network(object):
 		mnist_loader.load_data_wrapper.
 
 		"""
-		# print tolerance
 		results = [(list(approximate(self.feedforward(x), tolerance)), list(y)) for (x, y) in data]
 
 		return np.sum(np.int(x == y) for (x, y) in results)
 
 	def total_cost(self, data, lmbda, convert=False):
+
+
 		"""Return the total cost for the data set ``data``.  The flag
 		``convert`` should be set to False if the data set is the
 		training data (the usual case), and to True if the data set is
@@ -309,6 +350,8 @@ class Network(object):
 		return cost
 
 	def save(self, filename):
+
+
 		"""Save the neural network to the file ``filename``."""
 		data = {"sizes": self.sizes,
 				"weights": [w.tolist() for w in self.weights],
@@ -321,6 +364,8 @@ class Network(object):
 
 #### Loading a Network
 def load(filename):
+
+
 	"""Load a neural network from the file ``filename``.  Returns an
 	instance of Network.
 
@@ -338,20 +383,29 @@ def load(filename):
 #### Miscellaneous functions
 
 def sigmoid(z):
+
+
 	"""The sigmoid function."""
 	return 1.0 / (1.0 + np.exp(-z))
 
 
 def sigmoid_prime(z):
+
+
 	"""Derivative of the sigmoid function."""
 	return sigmoid(z) * (1 - sigmoid(z))
 
 
 ## approximate finction ##
 # This function rounds the network's predicted stability function to either 0
-# or 1 based on 
+# or 1 based on a passed limit. This is done by first finding the maximum value
+# in the predicted stability vector, then applying a bias "tolerance".
+# The higher the tolerance (1-100) the more selective in choosing which guessed
+# values should be 1.
 ##
 def approximate(x, tolerance):
+
+
 	tolerance = float(tolerance / 100.0)
 	appr_x = np.zeros((11, 1))
 	limit = float(max(x) * tolerance)

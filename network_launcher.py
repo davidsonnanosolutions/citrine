@@ -18,16 +18,17 @@ from pyfiglet import figlet_format
 import magpie_loader_4 as mgpl
 import network2_4 as network
 
-# Global Declerations
+# Global Declarations
 global training_data, validation_data, test_data, test_labels, data_loaded, loaded_network, network_loaded
 training_data, validation_data, test_data, test_labels, loaded_network = None, None, None, None, None
 data_loaded = False
 network_loaded = False
 
 ## menu() function ##
-#
+# The menu function allows users to interactivley train and evaluate neural networks.
 ##
 def menu():
+
 
 	net_shape = None
 	net_cost = None
@@ -41,8 +42,8 @@ def menu():
 	iter_choice = None
 	iter_range = None
 	iter_hyp = None
-
 	choice = 0
+
 	print "Welcome to the navigation menu. This menu will allow you to navigate neural network program.\n"
 
 	while choice != 5:
@@ -50,6 +51,7 @@ def menu():
 							   "3. Train Network\n 4. Test File\n 5. Exit"))
 
 		# Load File (1)
+		# This option allows the user to lod training data
 		if choice == 1:
 			print "Load Files Dialogue\n"
 			filePath = raw_input("Provide a file path to load training i.e. /home/user/data\n "
@@ -59,6 +61,7 @@ def menu():
 			load_file(filePath)
 			
 		# Load Network (2)
+		# This option allows users to load a save network (.nwk)
 		elif choice == 2:
 			print "Load Network Dialogue\nLoaded networks are currently only used to evalute test data and cannot be trained further\n\n"
 			net_file_path = raw_input("Provide a file path and name to load i.e. /home/user/data/_networks/my_network.nwk")
@@ -68,6 +71,10 @@ def menu():
 			load_network(net_file_path)
 
 		# Train Network (3)
+		# This option allows users to train a network on loaded data.
+		# The user can train on a single set of hyper parameters or iterate through a hyperparameter
+		# while others are held fixed. The user can save these results. Upon single training,
+		# the results are plotted for the user.
 		elif choice == 3:
 			print "Network Training Dialogue\n"
 
@@ -139,7 +146,9 @@ def menu():
 
 				train_network(net_shape, net_cost, save_trn, trn_file_path, trn_file_name, save_net, net_file_path, method, single_hyp, iter_choice, iter_range, iter_hyp)
 
-		# Test File (4) - work in progress
+		# Test File (4)
+		# This allows a user to load test data and evaluate it using the loaded network.
+		# Results are saved as a (.csv) as pairings of bimetallic compounds and stability vectors.
 		elif choice == 4:
 			if network_loaded == True:
 				print "Test File Dialogue\n"
@@ -163,7 +172,9 @@ def menu():
 		# Exit (5)
 
 ## load_file() function ##
-#
+# This function loads a training data file.
+# Use of this function sets the "data_loaded" flag to true allowing
+# access to the network training option in the menu.
 ##
 def load_file(filePath):
 
@@ -172,8 +183,8 @@ def load_file(filePath):
 	data_loaded = True
 	return(training_data, validation_data)
 
-## load_file() function ##
-#
+## load_test_file() function ##
+# This function loads test data for evaluation on a loaded network.
 ##
 def load_test_file(filePath):
 
@@ -182,7 +193,9 @@ def load_test_file(filePath):
 	return(test_data, test_labels)
 
 ## load_network() function ##
-#
+# This function loads a saved network.
+# Use of this function sets the "network_loaded" flag to true allowing
+# access to the test file option in the menu.
 ##
 def load_network(filePath):
 
@@ -199,7 +212,9 @@ def load_network(filePath):
 # net_cost - accepts Quadratic or Cross and sets the network to use either the quadratic cost function or
 # the cross entropy cost.
 # method - accepts 1 or 2, where 1 performs a single training based on fixed hyperparameters or an iterative process
-# which tests a range of values for a single hyper parameter. 
+# which tests a range of values for a single hyper parameter.
+#
+# Triggers the SGD method after creating an instance of the Network class in the network file.
 ##
 def train_network(net_shape=[96,30,11], net_cost="quadratic", save_trn=None, trn_file_path=None, trn_file_name=None, save_net=None, net_file_path=None, method=1, single_hyp=[30,10,0.2], iter_choice=None, iter_range=None, iter_hyp=[30,10,0.2]):
 
@@ -336,7 +351,7 @@ def train_network(net_shape=[96,30,11], net_cost="quadratic", save_trn=None, trn
 	return()
 
 ## test_file() function ##
-#
+# Loads users test_data and then evaluate against the laoded network, saves data.
 ##
 def test_file(filePath, resultsFilePath):
 
@@ -363,7 +378,7 @@ def test_file(filePath, resultsFilePath):
 
 	return()
 
-# Script of the program begins after this point
+### Script of the program begins after this point
 print(figlet_format('Citrine Challenge', font='starwars'))
 print "Welcome to Malcolm Davidson's submission for the Citrine Data Scientist Challenge"
 print "\n\nWhere noted, the code used in these files are modified version of Michael A. Nielsen's \"data_loader\" used in \"Neural Networks and Deep Learning\", Determination Press, 2015."

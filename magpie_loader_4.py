@@ -79,7 +79,11 @@ def load_data(filePath):
 
     return(input_data, validation_data)
 
+## load_test_data function
+# see load_data_function - only laods test data
+##
 def load_test_data(filePath):
+
 
 	# File I/O for importing and formatting test data.
 	with open(filePath + '/test_data.csv', 'rb') as f:
@@ -107,6 +111,7 @@ def load_test_data(filePath):
 ##	
 def load_data_wrapper(filePath):
 
+
 	# Store tuples from load_data() as training data "tr_d", validation data "va_d", and test data "te_d".
     tr_d, va_d= load_data(filePath)
 
@@ -125,7 +130,11 @@ def load_data_wrapper(filePath):
 
     return (training_data, validation_data)
 
+## load_test_data_wrapper function ##
+# see laod_data_wrapper - only loads test data
+##
 def load_test_data_wrapper(filePath):
+
 
 	# te_d is the test data tuple while te_e are the element labels stored in a pandas dataframe
 	te_d, te_e = load_test_data(filePath)
@@ -142,6 +151,7 @@ def load_test_data_wrapper(filePath):
 # This returns the string version of the stability vector as a (11,1) column vector.
 ##
 def vectorize(d):
+
 
 	# Use the Abstract Syntax Trees (ast) to interpret the string version of the stability vector and store it as "d"
 	# Define "e" an (11,1) numpy array of 0's to store the stability vector.
