@@ -1,4 +1,3 @@
-
 ## magpie_loader v4.0 ##
 # Version Notes: (December 28th, 2017) This version of the loader normalizaes the data by using scikit-learn's MinMax Scaler found in the preprocessing module.
 # This program loads, normalizes, and stadardizes data stored as .csv and exports tuples for use in a neural network.
@@ -36,7 +35,7 @@ def load_data(filePath):
     
 	
 	# File I/O for importing and formatting training data and creating validation data
-    with open(filePath, 'rb') as f:
+    with open(filePath + '/training_data.csv', 'rb') as f:
 
         # Load the training-data.csv file into a (2572,99) pandas dataframe 'raw_df'.
 		# Store a sub set of the "raw_df" as "data_df" which omits the stabity vector and the element names.
@@ -77,26 +76,30 @@ def load_data(filePath):
 		
 		# "validation_data" is a (x,y) tuple where x is a float32 np array of validation data and y are the associated stability vectors.
         validation_data = (validation_df.iloc[:,training_data_start:training_data_end].values.astype(np.float32),validation_df.iloc[:,results_data_position].values)
-		
+
+    return(input_data, validation_data)
+
+def load_test_data(filePath):
+
 	# File I/O for importing and formatting test data.
-    with open('/home/spike/citrine/test_data.csv', 'rb') as f:
-		
+	with open(filePath + '/test_data.csv', 'rb') as f:
 		# Load the test-data.csv file into a (750,99) pandas dataframe 'test_df'.
 		# Store a sub set of the "test_df" as "data_df" which omits the stabity vector and the element names.
-        test_df = pd.read_csv(f)
-        data_df = test_df.iloc[:,2:]
+		test_df = pd.read_csv(f)
+		data_df = test_df.iloc[:, 2:]
+		elements_df = test_df.iloc[:,:2]
 
 		# See above for descriptions of "test_df" and "norm_df".
-        temp_df = normalize(data_df)
-        temp_df.columns = data_df.columns
+		temp_df = normalize(data_df)
+		temp_df.columns = data_df.columns
 
-        norm_df = test_df.iloc[:,0:2]
-        norm_df = norm_df.join(temp_df)
+		norm_df = test_df.iloc[:, 0:2]
+		norm_df = norm_df.join(temp_df)
 
 		# "test_data" is a (x,y) tuple where x is a float32 numpy array of validation data and y are the associated stability vectors.
-        test_data = norm_df.iloc[:,test_data_start:].values.astype(np.float32)
+		test_data = norm_df.iloc[:, test_data_start:].values.astype(np.float32)
 
-    return(input_data, validation_data, test_data)
+	return (test_data, elements_df)
 
 ## load_data_wrapper() function ##	
 # This function returns (x,y) tuples of data as list of (96,1) numpy column vectors (x) and a list of stability vectors as
@@ -104,9 +107,8 @@ def load_data(filePath):
 ##	
 def load_data_wrapper(filePath):
 
-	
 	# Store tuples from load_data() as training data "tr_d", validation data "va_d", and test data "te_d".
-    tr_d, va_d, te_d = load_data(filePath)
+    tr_d, va_d= load_data(filePath)
 
 	# The algorithms used in the network expect a tuple of data composed of a list of column vectors
 	# represented with a numpy arrays and a list of stability vectors as column vectors.
@@ -118,9 +120,23 @@ def load_data_wrapper(filePath):
     validation_results = [vectorize(y) for y in va_d[1]]
     validation_data = zip(validation_inputs,validation_results)
 
-    test_data = [np.reshape(x, (96, 1)) for x in te_d]
+    print "\n\nFile loaded successfully\nNumber of Datapoints: {}\nNumber of Validation Datapoints: {}\nNumber of Parameters: {}\n\n".format(
+        len(training_inputs),len(validation_inputs),len(training_inputs[0]))
 
-    return (training_data, validation_data, test_data)
+    return (training_data, validation_data)
+
+def load_test_data_wrapper(filePath):
+
+	# te_d is the test data tuple while te_e are the element labels stored in a pandas dataframe
+	te_d, te_e = load_test_data(filePath)
+
+	test_labels = te_e
+	test_data = [np.reshape(x, (96, 1)) for x in te_d]
+
+	print "\n\nFile loaded successfully\nNumber of Datapoints: {}\nNumber of Parameters: {}\n\n".format(
+		len(test_data), len(test_data[0]))
+
+	return(test_data, test_labels)
 
 ## vectorize() function##
 # This returns the string version of the stability vector as a (11,1) column vector.
