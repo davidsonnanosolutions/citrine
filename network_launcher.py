@@ -268,6 +268,7 @@ def train_network(net_shape=[96,30,11], net_cost="quadratic", save_trn=None, trn
 			if iter_choice == "N":
 			
 				while k <= upper:
+					net.large_weight_initializer()
 					ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, k, iter_hyp[1], iter_hyp[2], evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
 
 					if int(save_trn) == 1:
@@ -296,6 +297,7 @@ def train_network(net_shape=[96,30,11], net_cost="quadratic", save_trn=None, trn
 			elif iter_choice == "B":
 			
 				while k <= upper:
+					net.large_weight_initializer()
 					ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, iter_hyp[0], k, iter_hyp[2], evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
 					if int(save_trn) == 1:
 						epo_df = pd.DataFrame(data=epo)
@@ -323,6 +325,7 @@ def train_network(net_shape=[96,30,11], net_cost="quadratic", save_trn=None, trn
 			elif iter_choice == "E":
 			
 				while k <= upper:
+					net.large_weight_initializer()
 					ev_c, ev_a, tr_c, tr_a, epo = net.SGD(training_data, iter_hyp[0], iter_hyp[1], k, evaluation_data=validation_data, monitor_evaluation_accuracy=True, monitor_training_cost=True)
 					if int(save_trn) == 1:
 						epo_df = pd.DataFrame(data=epo)
